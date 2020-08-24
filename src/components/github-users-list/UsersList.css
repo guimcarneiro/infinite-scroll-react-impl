@@ -1,0 +1,21 @@
+.users-list{
+    width: 300px;
+    height: 400px;
+    max-height: 400px;
+    overflow-x: auto;
+
+    border: 1px solid black;
+}
+
+.users-list__search-bar {
+    display: flex;
+    height: 35px;
+}
+
+.users-list__search-bar input {
+    width: 70%;
+}
+
+.users-list__search-bar button {
+    width: 30%;
+}
