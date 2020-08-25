@@ -1,6 +1,6 @@
 ## Como Inicializar a Aplicação?
 
-Para executar localmente a aplicação, basta executar **npm run start** na linha de comando dentro da pasta do projeto.
+Para executar localmente a aplicação, basta executar **npm install**, e depois **npm run start** na linha de comando dentro da pasta do projeto(ambos os comandos).
 
 ## Do que se trata?
 
