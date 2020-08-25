@@ -9,6 +9,7 @@ import './UsersList.css';
 
 function UsersList() {
 
+    const NOT_FOUND_MESSAGE_FROM_GITHUB_API = "Request failed with status code 404";
     const USERS_PER_PAGE = 10;
 
     const [usersList, setUsersList] = React.useState([]);
@@ -17,8 +18,12 @@ function UsersList() {
 
     const [usernameInput, setUsernameInput] = React.useState('guimcarneiro');
 
-    const [totalUsers, setTotalUsers] = React.useState(0);
     const [pageNumber, setPageNumber] = React.useState(1);
+    const [gotAllUsers, setGotAllUsers] = React.useState(false);
+
+    const [usernameNotFound, setUsernameNotFound] = React.useState(false);
+
+    /* First Request */
 
     useEffect(() => {
         setIsLoadingUsers(true);
@@ -26,17 +31,27 @@ function UsersList() {
         getGithubUserFollowersByUsername(usernameInput, USERS_PER_PAGE, pageNumber)
         .then((res) => {
 
+            console.log(res);
+
             setUsersList(res.data);
             setPageNumber(pageNumber + 1);
         })
         .catch((err) => {
             console.log(err);
+
+            handleUsernameNotFound(err);
         })
         .finally(() => {
             setIsLoadingUsers(false);
         })
 
     },[]);
+    
+    const resetList = () => {
+        setGotAllUsers(false);
+        setPageNumber(1);
+        setUsersList([]);
+    }
 
     /*Infinite Scroll*/
 
@@ -44,13 +59,20 @@ function UsersList() {
         return e.target.scrollHeight <= e.target.offsetHeight + Math.ceil(e.target.scrollTop);
     }
 
+    /* Handlers */
+
     const handleScroll = (e) => {
-        if(touchedBottom(e)){
+        if(touchedBottom(e) && !gotAllUsers){
             setIsLoadingMoreUsers(true);
             getGithubUserFollowersByUsername(usernameInput, USERS_PER_PAGE, pageNumber)
             .then((res) => {
                 let newUsers = res.data;
-                setUsersList([...usersList, ...newUsers]);
+
+                if(newUsers.length === 0){
+                    setGotAllUsers(true);
+                } else {
+                    setUsersList([...usersList, ...newUsers]);
+                }
 
                 setPageNumber(pageNumber + 1);
             })
@@ -64,14 +86,22 @@ function UsersList() {
     }
 
     const handleSearchByUsername = () => {
+        setUsernameNotFound(false);
         getGithubUserFollowersByUsername(usernameInput, USERS_PER_PAGE, 1)
         .then((res) => {
-            setUsersList(res.data);
+            let newUsers = res.data;
 
-            setPageNumber(1);
+            setUsersList(newUsers);
+
+            if(newUsers.length === 0){
+                setGotAllUsers(true);
+            }
+
+            setPageNumber(pageNumber+1);
         })
         .catch((err) => {
             console.log(err);
+            handleUsernameNotFound(err);
         })
         .finally(() => {
             setIsLoadingUsers(false);
@@ -79,17 +109,67 @@ function UsersList() {
 
     }
 
+    const handleUsernameNotFound = (err) => {
+        if(err.message === NOT_FOUND_MESSAGE_FROM_GITHUB_API){
+            setUsernameNotFound(true);
+
+            resetList();
+        }
+    }
+
     const handleUsernameChange = (username) => {
         setUsernameInput(username);
     }
 
+    /* Messages */
+
     const loadingMessage = () => {
-        return <div style={{display: 'flex',
+        return <div style={{width: '100%',
+                            display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'center' }}
                 >
                     <p>Loading...</p>
                 </div>
+    }
+
+    const noItemsMessage = () => {
+        return <div style={{width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center' }}
+                >
+                    <p>No Followers Found</p>
+                </div>
+    }
+
+    const usernameNotFoundMessage = () => {
+        return <div style={{width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center' }}
+                >
+                    <p>Username Doesn't Exist</p>
+                </div>
+    }
+
+    /* Dynamic Rendering */
+
+    const listUserCards = () => {
+        return usersList.map((user) => <UserCard
+                                            key={ user.login }
+                                            nome={ user.login }
+                                            url={ user.html_url }
+                                            avatar={ user.avatar_url }
+                                        />)
+    }
+
+    const showUsers = () => {
+        return usersList.length === 0? noItemsMessage() : listUserCards();
+    }
+
+    const showResult = () => {
+        return usernameNotFound? usernameNotFoundMessage() : showUsers();
     }
 
     return (
@@ -99,18 +179,10 @@ function UsersList() {
                 handleChange={ handleUsernameChange }
                 handleSubmit={ handleSearchByUsername }
             />
-            { isLoadingUsers?
-                loadingMessage()
-                :
-                usersList.map((user) => <UserCard
-                                            key={ user.login }
-                                            nome={ user.login }
-                                            url={ user.html_url }
-                                            avatar={ user.avatar_url }
-                                        />
-                )
-            }
-            { isLoadingMoreUsers? loadingMessage() : null }
+            <div className="users-list__container">
+                { isLoadingUsers? loadingMessage() : showResult() }
+                { isLoadingMoreUsers? loadingMessage() : null }
+            </div>
         </div>
     );
 }

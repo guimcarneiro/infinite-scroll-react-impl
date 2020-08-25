@@ -1,11 +1,17 @@
 .user-card {
     height: 90px;
+    width: 100%;
+    
     text-align: left;
 
     border: 1px solid black;
     display: flex;
 
     background-color: white;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-card .user-card__avatar {

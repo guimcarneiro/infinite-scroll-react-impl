@@ -2,7 +2,6 @@
     width: 300px;
     height: 400px;
     max-height: 400px;
-    overflow-x: auto;
 
     border: 1px solid black;
 }
@@ -18,4 +17,9 @@
 
 .users-list__search-bar button {
     width: 30%;
+}
+
+.users-list__container {
+    height: calc(100% - 35px);
+    overflow-x: auto;
 }

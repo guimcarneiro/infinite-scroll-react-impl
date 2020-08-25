@@ -13,7 +13,7 @@ function UserCard(props) {
     return (
         <div className="user-card">
             <div className="user-card__avatar">
-                <img alt="#" src={avatar} />
+                <img alt={ nome } src={avatar} />
             </div>
             <div>
                 <div>

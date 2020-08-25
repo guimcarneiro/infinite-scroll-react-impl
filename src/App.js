@@ -1,6 +1,6 @@
 import React from 'react';
 
-import UsersList from './components/github-users-list/UsersList';
+import { UsersList } from './components';
 
 import './App.css';
 
