@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const API_URL = 'https://api.github.com';
+
 export const getGithubUserFollowersByUsername = (username, per_page, page) => {
-    return axios.get(`https://api.github.com/users/${username}/followers`, {
+    return axios.get(`${API_URL}/users/${username}/followers`, {
         params: {
             'per_page': per_page,
             'page': page

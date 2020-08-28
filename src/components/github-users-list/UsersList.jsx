@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import UserCard from '../github-user-card/UserCard';
+import UserCard from './components/github-user-card/UserCard';
 import SearchBar from './components/search-bar/SearchBar';
 
 import { getGithubUserFollowersByUsername } from '../../services/GithubApi';
@@ -30,9 +30,7 @@ function UsersList() {
         
         getGithubUserFollowersByUsername(usernameInput, USERS_PER_PAGE, pageNumber)
         .then((res) => {
-
-            console.log(res);
-
+            
             setUsersList(res.data);
             setPageNumber(pageNumber + 1);
         })
