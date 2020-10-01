@@ -11,3 +11,5 @@ A ideia implementada foi um buscador de  ***Followers*** de um usuário do Githu
 ## O que foi consumido?
 
 API do Github, buscando ***Followers*** de um usuário atráves do seu username.
+
+.
